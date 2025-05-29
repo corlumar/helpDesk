@@ -106,18 +106,34 @@ if (isset($_GET["op"])) {
             exit();
             
         case "obtener":
-            $ticket_id = $_GET["id"];
-            $data = $ticket->obtener_ticket_por_id($ticket_id);
-            echo json_encode($data);
+        if (!isset($_GET["ticket_id"])) {
+            echo json_encode(["success" => false, "message" => "Falta el ID del ticket"]);
             exit();
+        }
+
+        $ticket_id = intval($_GET["ticket_id"]);
+        $datos = $ticket->obtener_ticket_por_id($ticket_id);
+
+        if ($datos) {
+            echo json_encode($datos);
+        } else {
+            echo json_encode(["success" => false, "message" => "Ticket no encontrado"]);
+        }
+        exit();
+
             
         case "actualizar":
             $ticket_id = $_POST["ticket_id"];
             $titulo = $_POST["ticket_titulo"];
             $descripcion = $_POST["ticket_descripcion"];
-            $resultado = $ticket->actualizar_ticket($ticket_id, $titulo, $descripcion);
-            echo json_encode(["success" => true]);
-            exit();
+
+          $resultado = $ticket->actualizar_ticket($ticket_id, $titulo, $descripcion);
+
+    echo json_encode([
+        "success" => $resultado,
+        "message" => $resultado ? "Ticket actualizado correctamente" : "No se pudo actualizar"
+    ]);
+    break;
 
 
         default:

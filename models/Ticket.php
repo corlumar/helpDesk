@@ -47,13 +47,13 @@ class Ticket extends Conectar {
         parent::set_names();
         $sql = "SELECT 
                     t.ticket_id, 
-                    t.ticket_titulo, 
-                    t.ticket_descripcion, 
-                    t.ticket_estado, 
-                    t.fecha_crea, 
-                    c.cat_nom, 
-                    u.usu_nom, 
-                    u.usu_ape
+                    t.ticket_titulo AS ticket_titulo, 
+                    t.ticket_descripcion AS ticket_descripcion, 
+                    t.ticket_estado AS ticket_estado, 
+                    t.fecha_crea AS fecha_crea, 
+                    c.cat_nom AS categoria, 
+                    u.usu_nom AS usuario_nombre, 
+                    u.usu_ape AS usuario_apellid
                 FROM tm_ticket t
                 INNER JOIN tm_categoria c ON t.cat_id = c.cat_id
                 INNER JOIN tm_usuario u ON t.usu_id = u.usu_id
@@ -63,19 +63,19 @@ class Ticket extends Conectar {
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    
-    public function actualizar_ticket($ticket_id, $titulo, $descripcion)
-{
+
+    public function actualizar_ticket($ticket_id, $titulo, $descripcion) {
         $conectar = parent::conexion();
         parent::set_names();
-        $sql = "UPDATE tm_ticket SET ticket_titulo = ?, ticket_descripcion = ? WHERE ticket_id = ?";
+        $sql = "UPDATE tm_ticket 
+                SET ticket_titulo = ?, ticket_descripcion = ? 
+                WHERE ticket_id = ?";
         $stmt = $conectar->prepare($sql);
         $stmt->bindValue(1, $titulo);
         $stmt->bindValue(2, $descripcion);
         $stmt->bindValue(3, $ticket_id);
         return $stmt->execute();
-}
-
+    }
 
     public function listar_ticket() {
         $conectar = parent::conexion();

@@ -29,7 +29,7 @@ if (!isset($_SESSION["usu_id"])) {
             <div id="ticket_wrapper">
                 <div class="mb-2">
                     <input class="search form-control mb-2" placeholder="Buscar ticket...">
-                    <select class="form-control filter-categoria mb-2"></select>
+                    <select class="form-control filter-categoria mb-2" placeholder="Categoría"></select>
                     <select class="form-control filter-usuario mb-2"></select>
                     <div class="mb-2">
                         <button class="btn btn-outline-primary filter-estado" data-estado="Abierto">Abiertos</button>
@@ -60,8 +60,9 @@ if (!isset($_SESSION["usu_id"])) {
     <script src="../../views/Ticket/consultarTicket.js"></script>
     
     <!-- Modal para editar ticket -->
+<!-- Modal Editar Ticket -->
 <div class="modal fade" id="modalEditarTicket" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <form id="formEditarTicket">
         <div class="modal-header">
@@ -69,24 +70,26 @@ if (!isset($_SESSION["usu_id"])) {
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
-          <input type="hidden" id="edit_ticket_id" name="ticket_id">
-          <div class="mb-3">
-            <label for="edit_ticket_titulo" class="form-label">Título</label>
-            <input type="text" class="form-control" id="edit_ticket_titulo" name="ticket_titulo">
-          </div>
-          <div class="mb-3">
-            <label for="edit_ticket_descripcion" class="form-label">Descripción</label>
-            <textarea class="form-control" id="edit_ticket_descripcion" name="ticket_descripcion" rows="3"></textarea>
-          </div>
+            <input type="hidden" name="ticket_id" id="edit_ticket_id">
+
+            <div class="mb-3">
+                <label for="edit_ticket_titulo" class="form-label">Título</label>
+                <input type="text" class="form-control" id="edit_ticket_titulo" name="ticket_titulo" required>
+            </div>
+            <div class="mb-3">
+                <label for="edit_ticket_descripcion" class="form-label">Descripción</label>
+                <textarea class="form-control" id="edit_ticket_descripcion" name="ticket_descripcion" rows="4" required></textarea>
+            </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
         </div>
       </form>
     </div>
   </div>
 </div>
+
 
 </body>
 </html>
