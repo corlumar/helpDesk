@@ -104,6 +104,21 @@ if (isset($_GET["op"])) {
                 "data" => $data
             ]);
             exit();
+            
+        case "obtener":
+            $ticket_id = $_GET["id"];
+            $data = $ticket->obtener_ticket_por_id($ticket_id);
+            echo json_encode($data);
+            exit();
+            
+        case "actualizar":
+            $ticket_id = $_POST["ticket_id"];
+            $titulo = $_POST["ticket_titulo"];
+            $descripcion = $_POST["ticket_descripcion"];
+            $resultado = $ticket->actualizar_ticket($ticket_id, $titulo, $descripcion);
+            echo json_encode(["success" => true]);
+            exit();
+
 
         default:
             echo json_encode(["success" => false, "message" => "Operación desconocida"]);

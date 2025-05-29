@@ -63,6 +63,19 @@ class Ticket extends Conectar {
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    
+    public function actualizar_ticket($ticket_id, $titulo, $descripcion)
+{
+        $conectar = parent::conexion();
+        parent::set_names();
+        $sql = "UPDATE tm_ticket SET ticket_titulo = ?, ticket_descripcion = ? WHERE ticket_id = ?";
+        $stmt = $conectar->prepare($sql);
+        $stmt->bindValue(1, $titulo);
+        $stmt->bindValue(2, $descripcion);
+        $stmt->bindValue(3, $ticket_id);
+        return $stmt->execute();
+}
+
 
     public function listar_ticket() {
         $conectar = parent::conexion();

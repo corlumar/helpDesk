@@ -58,5 +58,35 @@ if (!isset($_SESSION["usu_id"])) {
     <?php require_once("../MainJs/js.php"); ?>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
     <script src="../../views/Ticket/consultarTicket.js"></script>
+    
+    <!-- Modal para editar ticket -->
+<div class="modal fade" id="modalEditarTicket" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="formEditarTicket">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEditarLabel">Editar Ticket</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="edit_ticket_id" name="ticket_id">
+          <div class="mb-3">
+            <label for="edit_ticket_titulo" class="form-label">Título</label>
+            <input type="text" class="form-control" id="edit_ticket_titulo" name="ticket_titulo">
+          </div>
+          <div class="mb-3">
+            <label for="edit_ticket_descripcion" class="form-label">Descripción</label>
+            <textarea class="form-control" id="edit_ticket_descripcion" name="ticket_descripcion" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
