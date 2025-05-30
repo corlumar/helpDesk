@@ -18,14 +18,50 @@ document.addEventListener("DOMContentLoaded", function () {
             const titulo = document.getElementById('edit_ticket_titulo').value.trim();
             const descripcion = document.getElementById('edit_ticket_descripcion').value.trim();
 
-            if (!titulo || !descripcion) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Campos vacíos',
-                    text: 'Por favor completa todos los campos.'
-                });
-                return;
-            }
+           // Quita clases anteriores de error
+        document.getElementById('edit_ticket_titulo').classList.remove('is-invalid');
+        document.getElementById('edit_ticket_descripcion').classList.remove('is-invalid');
+        
+        if (!titulo) {
+    document.getElementById('edit_ticket_titulo').classList.add('is-invalid');
+    hasError = true;
+}
+
+if (!descripcion || descripcion.length < 10) {
+    document.getElementById('edit_ticket_descripcion').classList.add('is-invalid');
+    hasError = true;
+}
+
+        // Validación visual Bootstrap 5
+        let hasError = false;
+        if (!titulo) {
+            document.getElementById('edit_ticket_titulo').classList.add('is-invalid');
+            hasError = true;
+        }
+        if (!descripcion) {
+            document.getElementById('edit_ticket_descripcion').classList.add('is-invalid');
+            hasError = true;
+        }
+
+        if (hasError) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campos vacíos',
+                text: 'Por favor completa todos los campos.'
+            });
+            return;
+        if (descripcion.length < 10) {
+    document.getElementById('edit_ticket_descripcion').classList.add('is-invalid');
+    Swal.fire({
+        icon: 'info',
+        title: 'Descripción muy corta',
+        text: 'La descripción debe tener al menos 10 caracteres.'
+    });
+    return;
+}    
+            
+        }
+
 
             const formData = new URLSearchParams();
             formData.append("ticket_id", ticket_id);
@@ -164,15 +200,27 @@ function editar(ticket_id) {
     fetch(`../../controller/ticketController.php?op=obtener&ticket_id=${ticket_id}`)
         .then(res => res.json())
         .then(data => {
-            document.getElementById("edit_ticket_id").value = data.ticket_id;
-            document.getElementById("edit_ticket_titulo").value = data.ticket_titulo;
-            document.getElementById("edit_ticket_descripcion").value = data.ticket_descripcion;
+            if (!data || data.success === false || !data.ticket_id) {
+                throw new Error(data.message || "Ticket no válido");
+            }
 
-            new bootstrap.Modal(document.getElementById('modalEditarTicket')).show();
+            document.getElementById("edit_ticket_id").value = data.ticket_id;
+            document.getElementById("edit_ticket_titulo").value = data.ticket_titulo ?? '';
+            document.getElementById("edit_ticket_descripcion").value = data.ticket_descripcion ?? '';
+
+            const modalEl = document.getElementById('modalEditarTicket');
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            } else {
+                console.warn("No se encontró el modalEditarTicket");
+            }
         })
         .catch(err => {
             console.error("Error al obtener ticket para editar:", err);
-            Swal.fire("Error", "No se pudo cargar el ticket", "error");
+            Swal.fire("Error", err.message || "No se pudo cargar el ticket", "error");
         });
 }
+
+
 

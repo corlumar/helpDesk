@@ -1,16 +1,51 @@
 <?php
-require_once('config/conexion.php');
+require_once("config/conexion.php");
+require_once("models/Usuario.php");
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Si se envía el formulario
-if (isset($_POST["enviar"]) && $_POST["enviar"] === "si") {
-    require_once("models/Usuario.php");
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $usuario = new Usuario();
-    $usuario->login(); // Redirige si es correcto
+    $usu_correo = $_POST["usu_correo"] ?? '';
+    $usu_pass = $_POST["usu_pass"] ?? '';
+
+    if (empty($usu_correo) || empty($usu_pass)) {
+        header("Location: login.php?m=1"); // campos vacíos
+        exit();
+    }
+
+    $datos = $usuario->login($usu_correo, $usu_pass);
+
+    if (is_array($datos) && count($datos) > 0) {
+        $_SESSION["usu_id"] = $datos["usu_id"];
+        $_SESSION["usu_nom"] = $datos["usu_nom"];
+        $_SESSION["rol_id"] = $datos["rol_id"];
+
+        // Redirigir según el rol
+        switch ($_SESSION["rol_id"]) {
+            case 1: // Admin
+                header("Location: views/Admin/dashboard.php");
+                break;
+            case 2: // Soporte
+                header("Location: views/Soporte/dashboard.php");
+                break;
+            case 3: // Usuario
+                header("Location: views/Usuario/dashboard.php");
+                break;
+            default:
+                header("Location: login.php?m=4"); // Rol desconocido
+                break;
+        }
+        exit();
+    } else {
+        header("Location: login.php?m=2"); // credenciales inválidas
+        exit();
+    }
 }
+
+
 ?>
 <!DOCTYPE html>
 <html lang="es">

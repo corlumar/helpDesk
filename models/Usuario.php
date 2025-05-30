@@ -43,7 +43,7 @@ class Usuario extends Conectar {
                         break;
                     case 3:
                         $_SESSION["rol_nombre"] = "Usuario";
-                        header("Location: views/Home/dashboard.php");
+                        header("Location: views/Usuario/dashboard.php");
                         break;
                     default:
                         $_SESSION["rol_nombre"] = "Sin Rol";

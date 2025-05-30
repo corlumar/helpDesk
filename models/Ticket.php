@@ -6,8 +6,8 @@ class Ticket extends Conectar {
     public function insert_ticket($usu_id, $cat_id, $ticket_titulo, $ticket_descripcion, $ticket_estado) {
         $conectar = parent::conexion();
         parent::set_names();
-        $sql = "INSERT INTO tm_ticket (usu_id, cat_id, ticket_titulo, ticket_descripcion, ticket_estado, fecha_crea, est) 
-                VALUES (?, ?, ?, ?, ?, now(),'1');";
+        $sql = "INSERT INTO tm_ticket (usu_id, cat_id, ticket_titulo, ticket_descripcion, ticket_estado, fecha_crea) 
+                VALUES (?, ?, ?, ?, ?, now());";
         $stmt = $conectar->prepare($sql);
         $stmt->bindValue(1, $usu_id);
         $stmt->bindValue(2, $cat_id);
@@ -29,12 +29,11 @@ class Ticket extends Conectar {
                         WHEN 'Abierto' THEN 'Abierto'
                         WHEN 'Cerrado' THEN 'Cerrado'
                         ELSE 'Desconocido'
-                    END AS estado_nombre_display,
-                    tm_ticket.ticket_id AS acciones_id
+                    END AS estado_nombre_display
                 FROM tm_ticket
                 INNER JOIN tm_categoria ON tm_ticket.cat_id = tm_categoria.cat_id
                 INNER JOIN tm_usuario ON tm_ticket.usu_id = tm_usuario.usu_id
-                WHERE tm_ticket.usu_id = ? AND tm_ticket.ticket_estado = 'Abierto'
+                WHERE tm_ticket.usu_id = ?
                 ORDER BY tm_ticket.ticket_id DESC";
         $stmt = $conectar->prepare($sql);
         $stmt->bindValue(1, $usu_id);
@@ -47,13 +46,13 @@ class Ticket extends Conectar {
         parent::set_names();
         $sql = "SELECT 
                     t.ticket_id, 
-                    t.ticket_titulo AS ticket_titulo, 
-                    t.ticket_descripcion AS ticket_descripcion, 
-                    t.ticket_estado AS ticket_estado, 
-                    t.fecha_crea AS fecha_crea, 
-                    c.cat_nom AS categoria, 
-                    u.usu_nom AS usuario_nombre, 
-                    u.usu_ape AS usuario_apellid
+                    t.ticket_titulo, 
+                    t.ticket_descripcion, 
+                    t.ticket_estado, 
+                    t.fecha_crea, 
+                    c.cat_nom, 
+                    u.usu_nom, 
+                    u.usu_ape
                 FROM tm_ticket t
                 INNER JOIN tm_categoria c ON t.cat_id = c.cat_id
                 INNER JOIN tm_usuario u ON t.usu_id = u.usu_id
@@ -67,9 +66,7 @@ class Ticket extends Conectar {
     public function actualizar_ticket($ticket_id, $titulo, $descripcion) {
         $conectar = parent::conexion();
         parent::set_names();
-        $sql = "UPDATE tm_ticket 
-                SET ticket_titulo = ?, ticket_descripcion = ? 
-                WHERE ticket_id = ?";
+        $sql = "UPDATE tm_ticket SET ticket_titulo = ?, ticket_descripcion = ? WHERE ticket_id = ?";
         $stmt = $conectar->prepare($sql);
         $stmt->bindValue(1, $titulo);
         $stmt->bindValue(2, $descripcion);
@@ -86,12 +83,10 @@ class Ticket extends Conectar {
                     tm_categoria.cat_nom,
                     CONCAT(tm_usuario.usu_nom, ' ', tm_usuario.usu_ape) AS nombre_completo_usuario,
                     tm_ticket.fecha_crea,
-                    tm_ticket.ticket_estado AS estado_nombre_display,
-                    tm_ticket.ticket_id AS acciones_id
+                    tm_ticket.ticket_estado AS estado_nombre_display
                 FROM tm_ticket
                 INNER JOIN tm_categoria ON tm_ticket.cat_id = tm_categoria.cat_id
                 INNER JOIN tm_usuario ON tm_ticket.usu_id = tm_usuario.usu_id
-                WHERE tm_ticket.estado = 1
                 ORDER BY tm_ticket.ticket_id DESC";
         $stmt = $conectar->prepare($sql);
         $stmt->execute();
@@ -118,8 +113,7 @@ class Ticket extends Conectar {
                         tm_categoria.cat_nom,
                         CONCAT(tm_usuario.usu_nom, ' ', tm_usuario.usu_ape) AS nombre_completo_usuario,
                         tm_ticket.fecha_crea,
-                        tm_ticket.ticket_estado AS estado_nombre_display,
-                        tm_ticket.ticket_id AS acciones_id
+                        tm_ticket.ticket_estado AS estado_nombre_display
                     FROM tm_ticket
                     INNER JOIN tm_categoria ON tm_ticket.cat_id = tm_categoria.cat_id
                     INNER JOIN tm_usuario ON tm_ticket.usu_id = tm_usuario.usu_id
@@ -135,8 +129,7 @@ class Ticket extends Conectar {
                         tm_categoria.cat_nom,
                         CONCAT(tm_usuario.usu_nom, ' ', tm_usuario.usu_ape) AS nombre_completo_usuario,
                         tm_ticket.fecha_crea,
-                        tm_ticket.ticket_estado AS estado_nombre_display,
-                        tm_ticket.ticket_id AS acciones_id
+                        tm_ticket.ticket_estado AS estado_nombre_display
                     FROM tm_ticket
                     INNER JOIN tm_categoria ON tm_ticket.cat_id = tm_categoria.cat_id
                     INNER JOIN tm_usuario ON tm_ticket.usu_id = tm_usuario.usu_id

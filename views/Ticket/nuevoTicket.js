@@ -1,59 +1,71 @@
+document.addEventListener("DOMContentLoaded", () => {
+    cargarCategorias();
 
-function init() {
-	$("#ticket_form").on("submit", function(e) {
-		guardaryeditar(e);
-		
-});	
+    const form = document.getElementById("ticket_form");
 
-}
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-$(document).ready(function() {
-	$('#ticket_descripcion').summernote({
-			height: 150,
-	});
-			
-	$.post("../../controller/categoria.php?op=combo",function(data, status){
-		$('#cat_id').html(data);
-	});
-	
+        const titulo = document.getElementById("ticket_titulo").value.trim();
+        const descripcion = document.getElementById("ticket_descripcion").value.trim();
+        const cat_id = document.getElementById("cat_id").value;
+
+        if (!titulo || !descripcion || !cat_id) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campos incompletos',
+                text: 'Por favor completa todos los campos obligatorios.'
+            });
+            return;
+        }
+
+        const formData = new FormData(form);
+
+        try {
+            const res = await fetch("../../controller/ticketController.php?op=insert", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Ticket registrado',
+                    text: data.message || 'El ticket se ha creado correctamente.'
+                });
+
+                form.reset();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'No se pudo registrar el ticket.'
+                });
+            }
+        } catch (err) {
+            console.error("Error al enviar el ticket:", err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'No se pudo conectar con el servidor.'
+            });
+        }
+    });
 });
 
-function guardaryeditar(e) {
-	e.preventDefault();
-	var titulo = $('#ticket_titulo').val();
-	var descripcion = $('#ticket_descripcion').val();
-	
-	if (titulo.trim() === '' || descripcion.trim() === '<p></p>' || descripcion.trim() === '') { //Verificamos que no esten vacios
+async function cargarCategorias() {
+    try {
+        const res = await fetch("../../controller/categoria.php?op=combo");
+        const html = await res.text();
+        document.getElementById("cat_id").innerHTML = html;
+    } catch (error) {
+        console.error("Error al cargar las categorías:", error);
         Swal.fire({
-            title: "Error",
-            text: "Por favor, complete todos los campos.",
-            icon: "error"
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudieron cargar las categorías.'
         });
-        return; // Detiene la ejecución si los campos están vacíos
     }
-
-	var formData = new FormData($("#ticket_form")[0]);
-	$.ajax({
-		url: "../../controller/ticket.php?op=insert",
-		type: "POST",
-		data: formData,
-		contentType: false,
-		processData: false,
-		success: function(datos){
-			$('#cat_id').val('');
-			$('#ticket_titulo').val('');
-			$('#ticket_descripcion').summernote('code', '');
-			Swal.fire({
-				title: "Correcto",
-				text: "Ticket registrado correctamente",
-				icon: "success"
-			});
-		},
-		error: function(jqXHR, textStatus, errorThrown) {
-             console.error("Error en la llamada AJAX:", textStatus, errorThrown);
-             alert("Hubo un error al registrar el ticket. Por favor, inténtalo de nuevo.");
-		}
-	});	
 }
-
-init();

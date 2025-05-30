@@ -59,10 +59,9 @@ if (!isset($_SESSION["usu_id"])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
     <script src="../../views/Ticket/consultarTicket.js"></script>
     
-    <!-- Modal para editar ticket -->
-<!-- Modal Editar Ticket -->
+ <!-- Modal Editar Ticket -->
 <div class="modal fade" id="modalEditarTicket" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
       <form id="formEditarTicket">
         <div class="modal-header">
@@ -70,16 +69,21 @@ if (!isset($_SESSION["usu_id"])) {
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
-            <input type="hidden" name="ticket_id" id="edit_ticket_id">
 
-            <div class="mb-3">
-                <label for="edit_ticket_titulo" class="form-label">Título</label>
-                <input type="text" class="form-control" id="edit_ticket_titulo" name="ticket_titulo" required>
-            </div>
-            <div class="mb-3">
-                <label for="edit_ticket_descripcion" class="form-label">Descripción</label>
-                <textarea class="form-control" id="edit_ticket_descripcion" name="ticket_descripcion" rows="4" required></textarea>
-            </div>
+          <input type="hidden" id="edit_ticket_id" name="ticket_id">
+          
+        <div class="mb-3">
+            <label for="edit_ticket_titulo" class="form-label">Título</label>
+            <input type="text" class="form-control" id="edit_ticket_titulo" name="ticket_titulo" required>
+            <div class="invalid-feedback">El título es obligatorio.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="edit_ticket_descripcion" class="form-label">Descripción</label>
+            <textarea class="form-control" id="edit_ticket_descripcion" name="ticket_descripcion" rows="4" required></textarea>
+            <div class="invalid-feedback">La descripción es obligatoria y debe tener al menos 10 caracteres.
+        </div>
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

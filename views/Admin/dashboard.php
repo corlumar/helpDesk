@@ -1,26 +1,53 @@
 <?php
 require_once("../../config/conexion.php");
-session_start();
-if (!isset($_SESSION["usu_id"])) {
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION["usu_id"]) || $_SESSION["rol_id"] != 1) {
     header("Location: ../../login.php?m=3");
+    exit();
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <?php require_once("../Mainhead/head.php"); ?>
-    <title>Administrador - Panel</title>
+    <title>HelpDesk - Panel de Administración</title>
 </head>
-<body>
+<body class="with-side-menu">
     <?php require_once("../Mainheader/header.php"); ?>
+    <div class="mobile-menu-left-overlay"></div>
     <?php require_once("../MainNav/nav.php"); ?>
-    
-    <div class="container mt-4">
-        <h1>Bienvenido, <?php echo $_SESSION["usu_nom"]; ?></h1>
-        <a href="lista_tickets_admin.php" class="btn btn-primary">Ver mis tickets</a>
-        <a href="nuevo_ticket.php" class="btn btn-success">Nuevo Ticket</a>
+
+    <div class="page-content">
+        <div class="container-fluid">
+            <h2>🔧 Panel de Administración</h2>
+            <p>Bienvenido, <?php echo $_SESSION["usu_nom"] ?? 'Administrador'; ?>.</p>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card text-white bg-primary mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Gestionar Usuarios</h5>
+                            <p class="card-text">Visualiza y administra los usuarios del sistema.</p>
+                            <a href="../Usuario/lista_usuarios.php" class="btn btn-light">Ir</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-success mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Ver Tickets</h5>
+                            <p class="card-text">Consulta todos los tickets creados.</p>
+                            <a href="../Ticket/lista_tickets.php" class="btn btn-light">Ir</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <?php require_once("../MainJs/js.php"); ?>
 </body>
 </html>
+

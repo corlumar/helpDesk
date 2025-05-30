@@ -3,7 +3,6 @@ require_once("../../config/conexion.php");
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
 if (!isset($_SESSION["usu_id"])) {
     header("Location: ../../login.php?m=3");
     exit();
@@ -13,7 +12,7 @@ if (!isset($_SESSION["usu_id"])) {
 <html lang="es">
 <head>
     <?php require_once("../Mainhead/head.php"); ?>
-    <title>Nuevo Ticket</title>
+    <title>HelpDesk - Nuevo Ticket</title>
 </head>
 <body class="with-side-menu">
 
@@ -23,60 +22,36 @@ if (!isset($_SESSION["usu_id"])) {
 
     <div class="page-content">
         <div class="container-fluid">
-            <h2>🆕 Crear Nuevo Ticket</h2>
+            <h2>📝 Crear Nuevo Ticket</h2>
 
-            <div class="box-typical box-typical-padding">
-                <form id="formulario_ticket">
-                    <input type="hidden" name="usu_id" value="<?php echo $_SESSION["usu_id"]; ?>">
+            <form id="ticket_form" class="mt-4">
+                <input type="hidden" name="usu_id" id="usu_id" value="<?php echo $_SESSION['usu_id']; ?>">
 
-                    <div class="form-group">
-                        <label>Categoría:</label>
-                        <select id="cat_id" name="cat_id" class="form-control" required>
-                            <!-- Categorías se cargarán con JS -->
-                        </select>
-                    </div>
+                <div class="mb-3">
+                    <label for="cat_id" class="form-label">Categoría</label>
+                    <select class="form-select" id="cat_id" name="cat_id" required>
+                        <!-- Se llena con JS -->
+                    </select>
+                </div>
 
-                    <div class="form-group">
-                        <label>Título del Ticket:</label>
-                        <input type="text" name="ticket_titulo" class="form-control" required>
-                    </div>
+                <div class="mb-3">
+                    <label for="ticket_titulo" class="form-label">Título</label>
+                    <input type="text" class="form-control" id="ticket_titulo" name="ticket_titulo" placeholder="Título del ticket" required>
+                </div>
 
-                    <div class="form-group">
-                        <label>Descripción:</label>
-                        <textarea name="ticket_descripcion" class="form-control" rows="5" required></textarea>
-                    </div>
+                <div class="mb-3">
+                    <label for="ticket_descripcion" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="ticket_descripcion" name="ticket_descripcion" rows="4" placeholder="Describa el problema o solicitud" required></textarea>
+                </div>
 
-                    <input type="hidden" name="ticket_estado" value="Abierto">
-
-                    <button type="submit" class="btn btn-success">Guardar Ticket</button>
-                </form>
-            </div>
+                <button type="submit" class="btn btn-primary">Enviar Ticket</button>
+            </form>
         </div>
     </div>
 
     <?php require_once("../MainJs/js.php"); ?>
-    <script>
-        $(document).ready(function () {
-            // Cargar categorías
-            $.post("../../controller/categoriaController.php?op=select", function(data) {
-                $("#cat_id").html(data);
-            });
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../views/Ticket/nuevoTicket.js"></script>
 
-            // Guardar ticket
-            $("#formulario_ticket").submit(function(e) {
-                e.preventDefault();
-                $.post("../../controller/ticketController.php?op=insert", $(this).serialize(), function(response) {
-                    if (response.success) {
-                        Swal.fire("Éxito", "Ticket registrado correctamente", "success")
-                            .then(() => window.location.href = "lista_tickets.php");
-                    } else {
-                        Swal.fire("Error", response.message, "error");
-                    }
-                }, "json").fail(function() {
-                    Swal.fire("Error", "No se pudo registrar el ticket", "error");
-                });
-            });
-        });
-    </script>
 </body>
 </html>
