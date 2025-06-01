@@ -33,7 +33,7 @@
             </a>
         </li>
 
-            <?php if ($_SESSION["rol_id"] == 1 || $_SESSION["rol_id"] == 2): ?>
+            <?php if ($_SESSION["rol_id"] == 1 || $_SESSION["rol_id"] == 2 || $_SESSION["rol_id"] == 3): ?>
                 <li class="nav-item">
                     <a class="nav-link" href="../Ticket/lista_tickets.php">
                         <i class="bi bi-card-list"></i> Gestión de Tickets

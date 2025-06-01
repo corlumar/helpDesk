@@ -1,226 +1,187 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
     const usu_id = document.getElementById("usu_idx")?.value;
     const rol_id = document.getElementById("rol_idx")?.value;
 
     if (!usu_id || !rol_id) {
-        console.error("Error: usu_id o rol_id undefined");
+        console.error("Usuario o rol no definidos");
         return;
     }
 
     listarTickets("Abierto");
-
-    const formEditar = document.getElementById("formEditarTicket");
-    if (formEditar) {
-        formEditar.addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            const ticket_id = document.getElementById('edit_ticket_id').value;
-            const titulo = document.getElementById('edit_ticket_titulo').value.trim();
-            const descripcion = document.getElementById('edit_ticket_descripcion').value.trim();
-
-           // Quita clases anteriores de error
-        document.getElementById('edit_ticket_titulo').classList.remove('is-invalid');
-        document.getElementById('edit_ticket_descripcion').classList.remove('is-invalid');
-        
-        if (!titulo) {
-    document.getElementById('edit_ticket_titulo').classList.add('is-invalid');
-    hasError = true;
-}
-
-if (!descripcion || descripcion.length < 10) {
-    document.getElementById('edit_ticket_descripcion').classList.add('is-invalid');
-    hasError = true;
-}
-
-        // Validación visual Bootstrap 5
-        let hasError = false;
-        if (!titulo) {
-            document.getElementById('edit_ticket_titulo').classList.add('is-invalid');
-            hasError = true;
-        }
-        if (!descripcion) {
-            document.getElementById('edit_ticket_descripcion').classList.add('is-invalid');
-            hasError = true;
-        }
-
-        if (hasError) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Campos vacíos',
-                text: 'Por favor completa todos los campos.'
-            });
-            return;
-        if (descripcion.length < 10) {
-    document.getElementById('edit_ticket_descripcion').classList.add('is-invalid');
-    Swal.fire({
-        icon: 'info',
-        title: 'Descripción muy corta',
-        text: 'La descripción debe tener al menos 10 caracteres.'
-    });
-    return;
-}    
-            
-        }
-
-
-            const formData = new URLSearchParams();
-            formData.append("ticket_id", ticket_id);
-            formData.append("ticket_titulo", titulo);
-            formData.append("ticket_descripcion", descripcion);
-
-            fetch('../../controller/ticketController.php?op=actualizar', {
-                method: "POST",
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: formData.toString()
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: '¡Ticket actualizado!',
-                            text: 'Los cambios se guardaron correctamente.'
-                        });
-                        bootstrap.Modal.getInstance(document.getElementById("modalEditarTicket")).hide();
-                        listarTickets("Abierto");
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'No se pudo actualizar el ticket.'
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error("Error al guardar los cambios:", error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error inesperado',
-                        text: 'Hubo un problema al conectar con el servidor.'
-                    });
-                });
-        });
-    }
+    cargarFiltros();
+    setupFormEditar();
 });
 
+let lista;
+
 function listarTickets(estado) {
-    const usu_id = document.getElementById("usu_idx")?.value;
-    const rol_id = document.getElementById("rol_idx")?.value;
+    const usu_id = document.getElementById("usu_idx").value;
+    const rol_id = document.getElementById("rol_idx").value;
 
-    const isAdmin = rol_id == 1;
-    const isSoporte = rol_id == 2;
-    const isUsuario = rol_id == 3;
-
-    const endpoint = isUsuario
+    const endpoint = rol_id == 3
         ? '../../controller/ticketController.php?op=listar_x_usu'
         : '../../controller/ticketController.php?op=listar';
 
     fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: isUsuario ? `usu_id=${usu_id}` : ''
+        body: rol_id == 3 ? `usu_id=${usu_id}` : ''
     })
-        .then(response => response.text())
+        .then(res => res.text())
         .then(text => {
-            console.log("Respuesta cruda del servidor:", text);
-            if (!text || text.trim().startsWith("<")) throw new Error("Se recibió HTML, no JSON");
+            if (!text || text.trim().startsWith('<')) throw new Error("Respuesta no válida");
             return JSON.parse(text);
         })
         .then(json => {
-            const tbody = document.querySelector("#ticket_data");
-            if (!tbody) throw new Error("Elemento tbody no encontrado");
-
+            const tbody = document.getElementById("ticket_data");
             tbody.innerHTML = "";
 
             json.data.forEach(row => {
                 const tr = document.createElement("tr");
-
-                row.slice(0, 6).forEach(cell => {
+                const clases = ["ticket_id", "cat_nom", "ticket_titulo", "usuario", "fecha", "estado"];
+                row.slice(0, 6).forEach((cell, i) => {
                     const td = document.createElement("td");
+                    td.className = clases[i];
                     td.innerHTML = cell;
                     tr.appendChild(td);
                 });
 
-                const tdAcciones = document.createElement("td");
+                const tdAccion = document.createElement("td");
+                tdAccion.innerHTML = row[6];
+                tr.appendChild(tdAccion);
 
-                const btnVer = document.createElement("button");
-                btnVer.className = "btn btn-primary btn-sm";
-                btnVer.innerHTML = '<i class="fa fa-eye"></i>';
-                btnVer.onclick = () => ver(row[0]);
-                tdAcciones.appendChild(btnVer);
-
-                if (isAdmin || isUsuario) {
-                    const btnEditar = document.createElement("button");
-                    btnEditar.className = "btn btn-warning btn-sm ms-2";
-                    btnEditar.innerHTML = '<i class="fa fa-edit"></i>';
-                    btnEditar.onclick = () => editar(row[0]);
-                    tdAcciones.appendChild(btnEditar);
-                }
-
-                if (isAdmin || isSoporte) {
-                    const btnCerrar = document.createElement("button");
-                    btnCerrar.className = "btn btn-danger btn-sm ms-2";
-                    btnCerrar.innerHTML = '<i class="fa fa-times"></i>';
-                    btnCerrar.onclick = () => cerrar(row[0]);
-                    tdAcciones.appendChild(btnCerrar);
-                }
-
-                tr.appendChild(tdAcciones);
                 tbody.appendChild(tr);
             });
+
+            inicializarListJS();
         })
-        .catch(error => {
-            console.error("Error al cargar los tickets:", error);
+        .catch(err => console.error("Error cargando tickets:", err));
+}
+
+function inicializarListJS() {
+    if (lista) lista.destroy();
+
+    lista = new List('ticket_wrapper', {
+        valueNames: ['ticket_id', 'cat_nom', 'ticket_titulo', 'usuario', 'fecha', 'estado'],
+        page: 10,
+        pagination: true
+    });
+
+    document.querySelectorAll('.filter-estado').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const estado = btn.dataset.estado.toLowerCase();
+            lista.filter(item => {
+                return estado === "" || item.values().estado.toLowerCase().includes(estado);
+            });
+        });
+    });
+
+    document.querySelector('.filter-categoria').addEventListener('change', function () {
+        const filtro = this.value.toLowerCase();
+        lista.filter(item => item.values().cat_nom.toLowerCase().includes(filtro));
+    });
+
+    document.querySelector('.filter-usuario').addEventListener('change', function () {
+        const filtro = this.value.toLowerCase();
+        lista.filter(item => item.values().usuario.toLowerCase().includes(filtro));
+    });
+}
+
+function cargarFiltros() {
+    fetch("../../controller/categoria.php?op=combo_json")
+        .then(res => res.json())
+        .then(data => {
+            const select = document.querySelector(".filter-categoria");
+            data.forEach(cat => {
+                select.innerHTML += `<option value="${cat.cat_nom}">${cat.cat_nom}</option>`;
+            });
+        });
+
+    fetch("../../controller/usuario.php?op=listar_combo")
+        .then(res => res.json())
+        .then(data => {
+            const select = document.querySelector(".filter-usuario");
+            data.forEach(user => {
+                const nombre = `${user.usu_nom} ${user.usu_ape}`;
+                select.innerHTML += `<option value="${nombre}">${nombre}</option>`;
+            });
         });
 }
 
-function ver(ticket_id) {
-    window.location.href = `detalle_ticket.php?id=${ticket_id}`;
+function ver(id) {
+    window.location.href = `detalle_ticket.php?id=${id}`;
 }
 
 function cerrar(ticket_id) {
-    if (!confirm("¿Estás seguro de que deseas cerrar este ticket?")) return;
+    if (!confirm("¿Cerrar este ticket?")) return;
 
     fetch('../../controller/ticketController.php?op=cerrar', {
-        method: 'POST',
+        method: "POST",
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: `ticket_id=${ticket_id}`
     })
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
             alert(data.message);
             listarTickets("Abierto");
         })
-        .catch(error => {
-            console.error("Error al cerrar el ticket:", error);
-        });
+        .catch(err => console.error("Error al cerrar:", err));
 }
 
 function editar(ticket_id) {
     fetch(`../../controller/ticketController.php?op=obtener&ticket_id=${ticket_id}`)
         .then(res => res.json())
         .then(data => {
-            if (!data || data.success === false || !data.ticket_id) {
-                throw new Error(data.message || "Ticket no válido");
-            }
-
             document.getElementById("edit_ticket_id").value = data.ticket_id;
-            document.getElementById("edit_ticket_titulo").value = data.ticket_titulo ?? '';
-            document.getElementById("edit_ticket_descripcion").value = data.ticket_descripcion ?? '';
+            document.getElementById("edit_ticket_titulo").value = data.ticket_titulo;
+            document.getElementById("edit_ticket_descripcion").value = data.ticket_descripcion;
 
-            const modalEl = document.getElementById('modalEditarTicket');
-            if (modalEl) {
-                const modal = new bootstrap.Modal(modalEl);
-                modal.show();
-            } else {
-                console.warn("No se encontró el modalEditarTicket");
-            }
+            new bootstrap.Modal(document.getElementById('modalEditarTicket')).show();
         })
         .catch(err => {
-            console.error("Error al obtener ticket para editar:", err);
-            Swal.fire("Error", err.message || "No se pudo cargar el ticket", "error");
+            console.error("Error al cargar ticket para edición:", err);
         });
 }
 
+function setupFormEditar() {
+    const form = document.getElementById("formEditarTicket");
+    if (!form) return;
 
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
 
+        const ticket_id = document.getElementById('edit_ticket_id').value;
+        const titulo = document.getElementById('edit_ticket_titulo').value.trim();
+        const descripcion = document.getElementById('edit_ticket_descripcion').value.trim();
+
+        if (!titulo || !descripcion) {
+            Swal.fire({ icon: 'warning', title: 'Campos vacíos', text: 'Completa todos los campos' });
+            return;
+        }
+
+        const formData = new URLSearchParams();
+        formData.append("ticket_id", ticket_id);
+        formData.append("ticket_titulo", titulo);
+        formData.append("ticket_descripcion", descripcion);
+
+        fetch('../../controller/ticketController.php?op=actualizar', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Actualizado', text: data.message });
+                    bootstrap.Modal.getInstance(document.getElementById("modalEditarTicket")).hide();
+                    listarTickets("Abierto");
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Error', text: data.message });
+                }
+            })
+            .catch(err => {
+                console.error("Error al actualizar ticket:", err);
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Error inesperado.' });
+            });
+    });
+}

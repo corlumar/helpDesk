@@ -27,31 +27,37 @@ if (!isset($_SESSION["usu_id"])) {
             <input type="hidden" id="rol_idx" value="<?php echo $_SESSION["rol_id"]; ?>">
 
             <div id="ticket_wrapper">
-                <div class="mb-2">
-                    <input class="search form-control mb-2" placeholder="Buscar ticket...">
-                    <select class="form-control filter-categoria mb-2" placeholder="Categoría"></select>
-                    <select class="form-control filter-usuario mb-2"></select>
-                    <div class="mb-2">
-                        <button class="btn btn-outline-primary filter-estado" data-estado="Abierto">Abiertos</button>
-                        <button class="btn btn-outline-secondary filter-estado" data-estado="Cerrado">Cerrados</button>
-                    </div>
-                </div>
+    <div class="mb-2">
+        <input class="search form-control mb-2" placeholder="Buscar ticket...">
+        <select class="form-control filter-categoria mb-2">
+            <option value="">Todas las categorías</option>
+        </select>
+        <select class="form-control filter-usuario mb-2">
+            <option value="">Todos los usuarios</option>
+        </select>
+        <div class="mb-2">
+            <button class="btn btn-outline-primary filter-estado" data-estado="">Todos</button>
+            <button class="btn btn-outline-primary filter-estado" data-estado="Abierto">Abiertos</button>
+            <button class="btn btn-outline-secondary filter-estado" data-estado="Cerrado">Cerrados</button>
+        </div>
+    </div>
 
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th class="sort" data-sort="ticket_id">N° Ticket</th>
-                            <th class="sort" data-sort="cat_nom">Categoría</th>
-                            <th class="sort" data-sort="ticket_titulo">Título</th>
-                            <th class="sort" data-sort="usuario">Usuario</th>
-                            <th class="sort" data-sort="fecha">Fecha</th>
-                            <th class="sort" data-sort="estado">Estado</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody class="list" id="ticket_data"></tbody>
-                </table>
-            </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th class="sort" data-sort="ticket_id">N° Ticket</th>
+                <th class="sort" data-sort="cat_nom">Categoría</th>
+                <th class="sort" data-sort="ticket_titulo">Título</th>
+                <th class="sort" data-sort="usuario">Usuario</th>
+                <th class="sort" data-sort="fecha">Fecha</th>
+                <th class="sort" data-sort="estado">Estado</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody class="list" id="ticket_data"></tbody>
+    </table>
+</div>
+    
         </div>
     </div>
 

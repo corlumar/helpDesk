@@ -1,14 +1,16 @@
 <?php
 require_once("../config/conexion.php");
 
-$sql = "SELECT cat_id, cat_nom FROM categoria ORDER BY cat_nom ASC";
-$result = $conexion->query($sql);
+class Categoria extends Conectar {
 
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        echo '<option value="' . $row['cat_id'] . '">' . htmlspecialchars($row['cat_nom']) . '</option>';
+    public function listar_categorias() {
+        $conectar = parent::conexion();
+        parent::set_names();
+
+        $sql = "SELECT cat_id, cat_nom FROM tm_categoria WHERE est = 1 ORDER BY cat_nom ASC";
+        $stmt = $conectar->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-} else {
-    echo '<option value="">No hay categorías disponibles</option>';
 }
-?>
