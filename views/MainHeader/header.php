@@ -3,7 +3,7 @@
     <div class="container-fluid">
         <!-- Logo -->
         <a class="navbar-brand" href="../Home/inicio.php">
-            <img src="../../public/img/logo-2.png" alt="Logo" height="40">
+            <img src="../../public/img/logo Clumar_ext.png" alt="Logo" height="40">
         </a>
 
         <!-- Botón hamburguesa para responsive -->

@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 class Conectar {
     protected $dbh;
 
-    protected function Conexion() {
+    protected function conexion() {
         try {
             $conectar = $this->dbh = new PDO("mysql:host=localhost;dbname=helpdesk", "root", "");
             $conectar->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

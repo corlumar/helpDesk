@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function cargarCategorias() {
     try {
-        const res = await fetch("../../controller/categoria.php?op=combo");
+        const res = await fetch("../../controller/categoriaController.php?op=combo");
         const html = await res.text();
         document.getElementById("cat_id").innerHTML = html;
     } catch (error) {

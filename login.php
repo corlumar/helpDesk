@@ -6,6 +6,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $usuario = new Usuario();
     $usu_correo = $_POST["usu_correo"] ?? '';
@@ -142,8 +144,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <button type="submit" class="btn btn-primary w-100">
-            <i class="fa fa-sign-in-alt me-2"></i> Acceder
+            <i class="fa fa-sign-in-alt me-2"></i> Iniciar Sesión
         </button>
+        <div class="text-center mt-3">
+            <a href="registro.php">¿No tienes cuenta? Regístrate aquí</a>
+        </div>
+
         
         <?php if (isset($_GET['login']) && $_GET['login'] === 'success'): ?>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

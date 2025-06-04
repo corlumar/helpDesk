@@ -4,7 +4,7 @@
         <!-- Logo -->
         <div class="text-center py-3 border-bottom">
             <a href="../Home/inicio.php">
-                <img src="../../public/img/logo-2.png" alt="Logo" height="50">
+                <img src="../../public/img/logo Clumar.png" alt="Logo" height="50">
             </a>
         </div>
 
